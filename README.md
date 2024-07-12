@@ -19,6 +19,7 @@ Use the command `:SessionManager[!]` with one of the following arguments:
 | `load_current_dir_session`   | Removes all buffers and tries to `:source` the last saved session of the current directory. Returns `true` if the session was restored and `false` otherwise.                           |
 | `load_git_session`           | When in a git repo, removes all buffers and tries to `:source` the last saved session of the git repo root directory. Returns `true` if the session was restored and `false` otherwise. |
 | `save_current_session`       | Works like `:mksession`, but saves/creates current directory as a session in `sessions_dir`.                                                                                            |
+| `save_keeping_session_cwd`   | Works like `:mksession`, but saves/creates session with its CWD directory as a session in `sessions_dir`.                                                                                            |
 | `delete_session`             | Select and delete session.                                                                                                                                                              |
 | `delete_current_dir_session` | Deletes the session associated with the current directory.                                                                                                                              |
 

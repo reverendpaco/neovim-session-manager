@@ -36,7 +36,7 @@ function session_manager.load_session(discard_current)
   }, function(item)
     if item then
       session_manager.autosave_session()
-      utils.load_session(item.filename, discard_current)
+      session_manager.load_session_wrapper(item.filename, discard_current)
     end
   end)
 end
@@ -47,10 +47,15 @@ end
 function session_manager.load_last_session(discard_current)
   local last_session = utils.get_last_session_filename()
   if last_session then
-    utils.load_session(last_session, discard_current)
+    session_manager.load_session_wrapper(last_session, discard_current)
     return true
   end
   return false
+end
+
+function session_manager.load_session_wrapper(filename, discard_current)
+  session_manager.current_cwd = filename
+  utils.load_session(filename, discard_current)
 end
 
 --- Tries to load a session for the current working directory.
@@ -60,7 +65,7 @@ function session_manager.load_current_dir_session(discard_current)
   if cwd then
     local session = config.dir_to_session_filename(cwd)
     if session:exists() then
-      utils.load_session(session.filename, discard_current)
+      session_manager.load_session_wrapper(session.filename, discard_current)
       return true
     end
   end
@@ -79,11 +84,27 @@ function session_manager.load_git_session(discard_current)
   if git_dir then
     local session = config.dir_to_session_filename(git_dir)
     if session:exists() then
-      utils.load_session(session.filename, discard_current)
+      session_manager.load_session_wrapper(session.filename, discard_current)
       return true
     end
   end
   return false
+end
+
+function session_manager.save_keeping_session_cwd()
+  local session_name
+  if session_manager.current_cwd ~= nil then
+    session_name = session_manager.current_cwd
+  else
+    cwd = vim.uv.cwd()
+    if cwd then
+      session_name = config.dir_to_session_filename(cwd).filename
+    else
+      vim.notify('something went wrong')
+      return
+    end
+  end
+  utils.save_session(session_name)
 end
 
 --- Saves a session for the current working directory.
